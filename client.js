@@ -49,3 +49,17 @@ clearBtn.addEventListener('click', clearChat);
 
 // Initial render
 renderMessages();
+// Your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBVBTVw6cKQXajZniW7cpX68HQL-1nYPbg",
+  authDomain: "room-ec3e8.firebaseapp.com",
+  projectId: "room-ec3e8",
+  storageBucket: "room-ec3e8.firebasestorage.app",
+  messagingSenderId: "306404527262",
+  appId: "1:306404527262:web:f9c251339050ceab3dbf8f",
+  measurementId: "G-TE6G7HTP4Z"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
