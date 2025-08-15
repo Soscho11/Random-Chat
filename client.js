@@ -1,9 +1,4 @@
-const messagesList = document.getElementById('messages');
-const msgInput = document.getElementById('msg');
-const sendBtn = document.getElementById('send');
-const clearBtn = document.getElementById('clear');
-
-// Your Firebase config
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBVBTVw6cKQXajZniW7cpX68HQL-1nYPbg",
   authDomain: "room-ec3e8.firebaseapp.com",
@@ -18,20 +13,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Send message to Firebase
+const messagesList = document.getElementById('messages');
+const msgInput = document.getElementById('msg');
+const sendBtn = document.getElementById('send');
+const clearBtn = document.getElementById('clear');
+
+// Ask user for a name
+let username = prompt("Enter your name:", "Anonymous") || "Anonymous";
+
+// Send message
 function sendMessage() {
   const text = msgInput.value.trim();
   if (!text) return;
 
   db.collection('messages').add({
     text: text,
-    ts: Date.now()
+    ts: Date.now(),
+    user: username
   }).catch(err => console.error(err));
 
   msgInput.value = '';
 }
 
-// Clear all messages in Firebase
+// Clear all messages
 function clearChat() {
   if (confirm("Are you sure you want to clear the chat?")) {
     db.collection('messages').get().then(snapshot => {
@@ -40,21 +44,20 @@ function clearChat() {
   }
 }
 
-// Real-time updates from Firebase
+// Real-time listener
 db.collection('messages').orderBy('ts').onSnapshot(snapshot => {
   messagesList.innerHTML = '';
   snapshot.forEach(doc => {
+    const data = doc.data();
     const li = document.createElement('li');
-    li.textContent = doc.data().text;
-    li.className = 'msg';
+    li.textContent = `${data.user}: ${data.text}`;
+    li.className = 'msg ' + (data.user === username ? 'user' : 'friend');
     messagesList.appendChild(li);
   });
   messagesList.scrollTop = messagesList.scrollHeight;
 });
 
-// Events
+// Event listeners
 sendBtn.addEventListener('click', sendMessage);
-msgInput.addEventListener('keypress', e => {
-  if (e.key === 'Enter') sendMessage();
-});
+msgInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
 clearBtn.addEventListener('click', clearChat);
